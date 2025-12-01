@@ -30,6 +30,11 @@
    - 将自己的研究脚本放入 `script/investment_game` 或 `script/micro_economic` 中。
    - 若脚本带有可执行权限，推荐在文件头声明解释器：`#!/usr/bin/env python3`。
 
+## 玩游戏
+
+1. shoedog：https://turbo581581.github.io/asset_management/shoedog.html
+2. 
+
 ## 常用命令速查
 
 `develop_command/common_command.sh` 汇总了构建、调试、Docker、批量授权等高频命令，可直接复制粘贴使用。例如：

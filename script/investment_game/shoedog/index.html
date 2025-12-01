@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shoe Dog 创业模拟 2.0 - 宏观经济版</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+      display: flex;
+      gap: 24px;
+    }
+    .card {
+      background: radial-gradient(circle at top left, #0b1120 0, #020617 50%, #000 100%);
+      border-radius: 18px;
+      padding: 20px 24px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.75);
+      border: 1px solid #1f2937;
+    }
+    .left {
+      flex: 2;
+    }
+    .right {
+      flex: 1.3;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 24px;
+      color: #f97316;
+      letter-spacing: 0.5px;
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .question-id {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    .question-text {
+      font-size: 18px;
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .option-btn {
+      text-align: left;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 10px 14px;
+      background: #020617;
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.12s ease, transform 0.08s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+    }
+    .option-btn span.key {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #020617;
+      border: 1px solid #4b5563;
+      font-weight: 600;
+      font-size: 12px;
+      color: #f97316;
+    }
+    .option-btn:hover {
+      background: #0f172a;
+      border-color: #6b7280;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 26px rgba(15,23,42,0.9);
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid #1f2937;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+    .pill span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .stat {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #020617;
+      border: 1px solid #1f2937;
+      font-size: 13px;
+    }
+    .stat-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: #9ca3af;
+    }
+    .stat-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid #4b5563;
+      color: #9ca3af;
+      gap: 6px;
+      margin-right: 6px;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #f97316;
+    }
+    .log {
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px dashed #1f2937;
+      font-size: 12px;
+      color: #9ca3af;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .log-line-event {
+      color: #facc15;
+    }
+    .log-line-choice {
+      color: #9ca3af;
+    }
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 12px;
+    }
+    .section-title {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+    .macro-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .macro {
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: #020617;
+      border: 1px solid #111827;
+      font-size: 12px;
+    }
+    .macro-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+      color: #9ca3af;
+    }
+    .macro-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .macro-warning {
+      color: #f97316;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    .result-title {
+      font-size: 20px;
+      margin-bottom: 6px;
+      color: #facc15;
+    }
+    .result-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #e5e7eb;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 左侧：问题 + 选择 -->
+    <div class="card left">
+      <h1>Shoe Dog 创业模拟 2.0 · 宏观经济版</h1>
+      <div class="pill">
+        <span class="dot"></span>
+        <span id="round-info">第 1 关 / 共 11 关</span>
+      </div>
+      <div>
+        <span class="badge">
+          <span class="badge-dot"></span> 实体经营
+        </span>
+        <span class="badge">
+          <span class="badge-dot" style="background:#22c55e;"></span> 宏观经济
+        </span>
+        <span class="badge">
+          <span class="badge-dot" style="background:#3b82f6;"></span> 随机黑天鹅
+        </span>
+      </div>
+
+      <div class="question-id" id="question-id"></div>
+      <div class="question-text" id="question-text"></div>
+      <div class="option-list" id="option-list"></div>
+
+      <div class="log" id="log"></div>
+
+      <div class="footer">
+        每一关的选择 + 随机宏观事件会共同决定：<br/>
+        你是被周期碾碎，还是在战争、汇率、中美冲突中，超越奈特。
+      </div>
+    </div>
+
+    <!-- 右侧：公司状态 + 宏观环境 -->
+    <div class="card right">
+      <h2>公司经营状态</h2>
+      <div class="stats-grid">
+        <div class="stat"><div class="stat-label"><span>💰 现金流</span></div><div class="stat-value" id="stat-cash">0</div></div>
+        <div class="stat"><div class="stat-label"><span>📦 供应链健康</span></div><div class="stat-value" id="stat-supply">0</div></div>
+        <div class="stat"><div class="stat-label"><span>🧲 品牌力</span></div><div class="stat-value" id="stat-brand">0</div></div>
+        <div class="stat"><div class="stat-label"><span>🧑‍🤝‍🧑 团队士气</span></div><div class="stat-value" id="stat-team">0</div></div>
+        <div class="stat"><div class="stat-label"><span>📈 成长速度</span></div><div class="stat-value" id="stat-growth">0</div></div>
+        <div class="stat"><div class="stat-label"><span>🌪 内部风险</span></div><div class="stat-value" id="stat-risk">0</div></div>
+      </div>
+
+      <div class="section-title">🌍 宏观环境（每回合可能随机变化）</div>
+      <div class="macro-grid">
+        <div class="macro">
+          <div class="macro-label"><span>💵 USD / CNY</span></div>
+          <div class="macro-value" id="macro-usd">7.10</div>
+          <div class="macro-warning" id="macro-usd-warn"></div>
+        </div>
+        <div class="macro">
+          <div class="macro-label"><span>🧾 关税水平</span></div>
+          <div class="macro-value" id="macro-tariff">10%</div>
+          <div class="macro-warning" id="macro-tariff-warn"></div>
+        </div>
+        <div class="macro">
+          <div class="macro-label"><span>🔥 全球通胀</span></div>
+          <div class="macro-value" id="macro-inflation">2%</div>
+          <div class="macro-warning" id="macro-inflation-warn"></div>
+        </div>
+        <div class="macro">
+          <div class="macro-label"><span>🏦 全球利率</span></div>
+          <div class="macro-value" id="macro-interest">3.5%</div>
+          <div class="macro-warning" id="macro-interest-warn"></div>
+        </div>
+        <div class="macro">
+          <div class="macro-label"><span>🚢 供应链外部风险</span></div>
+          <div class="macro-value" id="macro-supplyrisk">10</div>
+          <div class="macro-warning" id="macro-supplyrisk-warn"></div>
+        </div>
+        <div class="macro">
+          <div class="macro-label"><span>🧠 消费者信心</span></div>
+          <div class="macro-value" id="macro-confidence">80</div>
+          <div class="macro-warning" id="macro-confidence-warn"></div>
+        </div>
+        <div class="macro">
+          <div class="macro-label"><span>⚔️ 地缘紧张度</span></div>
+          <div class="macro-value" id="macro-geo">10</div>
+          <div class="macro-warning" id="macro-geo-warn"></div>
+        </div>
+      </div>
+
+      <div id="result-block" style="margin-top:16px; display:none;">
+        <div class="result-title" id="result-title"></div>
+        <div class="result-text" id="result-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 游戏状态
+    const state = {
+      cash: 0,
+      supply: 0,
+      brand: 0,
+      team: 0,
+      growth: 0,
+      risk: 0,
+      history: []
+    };
+
+    // 宏观环境
+    const macro = {
+      usdRate: 7.10,            // USD/CNY
+      tariff: 10,              // %
+      inflation: 2,            // %
+      interestRate: 3.5,       // %
+      externalSupplyRisk: 10,  // 0-100
+      consumerConfidence: 80,  // 0-100
+      geoTension: 10           // 0-100
+    };
+
+    // 问题（原有 11 关）
+    const questions = [
+      {
+        id: 1,
+        text: "毕业后，你想干什么？",
+        options: {
+          A: { text: "去会计师事务所上班（稳定工作，学习财务）", effects: { cash: 10, growth: 5, risk: -5 } },
+          B: { text: "去环球旅行寻找灵感（开眼界，但花钱）", effects: { cash: -10, growth: 10, risk: 5, brand: 5 } },
+          C: { text: "在家写商业计划书（理论充足，实践不足）", effects: { cash: -5, growth: 5 } },
+          D: { text: "随便混几年（安全但浪费时间）", effects: { growth: -5, risk: -5 } }
+        }
+      },
+      {
+        id: 2,
+        text: "你萌生了做跑鞋生意的想法，要不要去日本谈代理？",
+        options: {
+          A: { text: "立刻飞日本，硬刚拜访供应商", effects: { cash: -10, growth: 10, risk: 5, brand: 5 } },
+          B: { text: "写邮件等对方回复（安全但节奏慢）", effects: { risk: -5, growth: -5 } },
+          C: { text: "不去，日本太远太贵（放弃机会）", effects: { growth: -10 } },
+          D: { text: "借钱飞日本（高风险高回报）", effects: { cash: -20, growth: 15, risk: 10, brand: 5 } }
+        }
+      },
+      {
+        id: 3,
+        text: "供应商问：你们公司有多大？其实就你一个人，你怎么回答？",
+        options: {
+          A: { text: "老实说只有我一个人（诚信但谈判力差）", effects: { supply: -5, brand: -2, risk: -5 } },
+          B: { text: "模糊回答：我们在美国有销售网络", effects: { supply: 5, risk: 5, brand: 2 } },
+          C: { text: "吹牛：我们是美国大型分销商", effects: { supply: 10, risk: 15, brand: 5 } },
+          D: { text: "反问对方市场规划，侧面展现专业度", effects: { supply: 5, growth: 5, brand: 3 } }
+        }
+      },
+      {
+        id: 4,
+        text: "第一批鞋到美国了，你打算怎么卖？",
+        options: {
+          A: { text: "自己开车跑校园，一双一双地卖", effects: { brand: 15, cash: 5, growth: 10, team: 5, risk: -5 } },
+          B: { text: "找零售店铺铺货（批发为主）", effects: { cash: 10, supply: 5, brand: 5 } },
+          C: { text: "让朋友帮忙卖（轻松但不可控）", effects: { cash: 5, team: 5, risk: 5 } },
+          D: { text: "砸广告推广（快速打响名气）", effects: { cash: -15, brand: 15, risk: 5 } }
+        }
+      },
+      {
+        id: 5,
+        text: "销量开始起来，但现金周转不过来，你怎么办？",
+        options: {
+          A: { text: "向银行申请贷款（正路，但背负债务）", effects: { cash: 30, risk: 10, supply: 10, brand: 5, growth: 5 } },
+          B: { text: "向父母借钱（快速但压力在家庭）", effects: { cash: 15, team: -5, risk: 5 } },
+          C: { text: "刷信用卡透支（非常危险）", effects: { cash: 20, risk: 20 } },
+          D: { text: "停下扩张，慢慢卖（保守）", effects: { growth: -10, risk: -10, supply: -5 } }
+        }
+      },
+      {
+        id: 6,
+        text: "你遇到了疯子型销售 Johnson，你如何管理他？",
+        options: {
+          A: { text: "放手让他自由发挥（高增长高混乱）", effects: { brand: 15, team: 10, cash: 10, growth: 10, risk: 5, supply: -5 } },
+          B: { text: "设定严格 KPI 进行管控", effects: { brand: 0, team: -5, cash: 5, growth: 5, risk: -5 } },
+          C: { text: "让他负责重点客户，有限度地放权", effects: { brand: 10, team: 5, cash: 5, growth: 5 } },
+          D: { text: "觉得太难管，干脆开除他", effects: { brand: -10, team: -5, growth: -5 } }
+        }
+      },
+      {
+        id: 7,
+        text: "供应链第一次出现断货风险，你怎么办？",
+        options: {
+          A: { text: "向现有供应商施压，逼他优先给你产能", effects: { supply: -5, risk: 5, brand: -2 } },
+          B: { text: "自己再找一家供应商，做多元化布局", effects: { supply: 20, risk: -20, cash: -10, brand: 10, team: 5, growth: 10 } },
+          C: { text: "选择等待，看情况再说", effects: { supply: -15, cash: -5, risk: 5 } },
+          D: { text: "在公开场合吐槽供应商，让舆论施压", effects: { brand: -20, risk: 20 } }
+        }
+      },
+      {
+        id: 8,
+        text: "竞争对手开始抄袭你的设计，你怎么办？",
+        options: {
+          A: { text: "继续猛做新品迭代，保持技术领先", effects: { brand: 10, cash: -5, growth: 10 } },
+          B: { text: "打官司维权（烧钱但树立立场）", effects: { cash: -20, brand: 10, risk: -5, team: 5, growth: 5 } },
+          C: { text: "靠降价跟对手拼价格", effects: { cash: -10, brand: -10, risk: 10 } },
+          D: { text: "从产品转向强调品牌故事和运动员形象", effects: { brand: 15, cash: -5, growth: 5 } }
+        }
+      },
+      {
+        id: 9,
+        text: "你的跑鞋品牌逐渐成名，要不要扩展品类？",
+        options: {
+          A: { text: "暂时不扩，继续深耕跑鞋", effects: { risk: -15, cash: 10, team: 5, supply: 5, growth: -5 } },
+          B: { text: "扩展篮球鞋，押注新赛道", effects: { growth: 15, cash: -10, risk: 10, brand: 10 } },
+          C: { text: "做运动服装，尝试提升客单价", effects: { brand: 10, cash: -5, risk: 5 } },
+          D: { text: "鞋、服、配件一起扩（全线开火）", effects: { growth: 20, cash: -20, risk: 20 } }
+        }
+      },
+      {
+        id: 10,
+        text: "欧洲渠道商找上门，你第一次迎来全球化机会，怎么做？",
+        options: {
+          A: { text: "小规模自营试水，慢慢摸索", effects: { growth: 10, cash: -10, risk: 5, brand: 5 } },
+          B: { text: "大规模进入，重仓欧洲市场", effects: { growth: 20, cash: -20, risk: 20, brand: 15 } },
+          C: { text: "找当地代理做，轻资产全球化", effects: { supply: 10, risk: -10, brand: 15, growth: 10, team: 5 } },
+          D: { text: "暂缓，觉得时机未到", effects: { growth: -5, risk: -5 } }
+        }
+      },
+      {
+        id: 11,
+        text: "投资人问：要不要现在就上市？",
+        options: {
+          A: { text: "立刻上市，拿钱、扩张！", effects: { cash: 50, risk: 20, brand: 10, growth: 15 } },
+          B: { text: "再等一年，把基础打稳再上市", effects: { risk: -10, brand: 10, team: 10, growth: 5, supply: 5 } },
+          C: { text: "先再融一轮私募，暂不上市", effects: { cash: 20, risk: 5, growth: 5 } },
+          D: { text: "拒绝上市，保持绝对控制权", effects: { risk: -5, brand: 0, growth: -5 } }
+        }
+      }
+    ];
+
+    // 宏观事件配置（概率触发）
+    const macroEvents = [
+      {
+        id: "oil-war",
+        name: "中东局势升级，油价暴涨",
+        desc: "战争推高油价，海运成本飙升，你的供应链承压。",
+        weight: 3,
+        condition: (round, state, macro) => true,
+        effects: {
+          stats: { cash: -5, supply: -5, risk: 5 },
+          macro: { inflation: 0.5, externalSupplyRisk: 8, geoTension: 5 }
+        }
+      },
+      {
+        id: "fed-hike",
+        name: "美联储激进加息",
+        desc: "全球利率上升，融资变贵，消费者也更保守。",
+        weight: 3,
+        condition: (round, state, macro) => round >= 3,
+        effects: {
+          stats: { cash: -5, growth: -5, risk: 3 },
+          macro: { interestRate: 0.75, consumerConfidence: -5 }
+        }
+      },
+      {
+        id: "fed-cut",
+        name: "美联储意外降息",
+        desc: "利率下调，全球资金更便宜，消费略有恢复。",
+        weight: 2,
+        condition: (round, state, macro) => macro.interestRate > 3.5,
+        effects: {
+          stats: { cash: 5, growth: 5 },
+          macro: { interestRate: -0.5, consumerConfidence: 5 }
+        }
+      },
+      {
+        id: "us-china-tariff-up",
+        name: "中美贸易摩擦升级",
+        desc: "美国提高对你所在国家的鞋类关税，你在海外的利润被压缩。",
+        weight: 3,
+        condition: (round, state, macro) => round >= 5 && state.brand >= 30,
+        effects: {
+          stats: { growth: -5, brand: -5, risk: 5 },
+          macro: { tariff: 5, geoTension: 10, consumerConfidence: -3 }
+        }
+      },
+      {
+        id: "us-china-relief",
+        name: "中美阶段性达成贸易缓和协议",
+        desc: "关税有所回落，紧张舆论暂时缓和。",
+        weight: 2,
+        condition: (round, state, macro) => macro.tariff >= 15,
+        effects: {
+          stats: { growth: 5, brand: 5 },
+          macro: { tariff: -5, geoTension: -8, consumerConfidence: 4 }
+        }
+      },
+      {
+        id: "port-strike",
+        name: "重要港口工人罢工",
+        desc: "你的一批货被迫滞留港口，发货延误，客户投诉。",
+        weight: 3,
+        condition: (round, state, macro) => round >= 4,
+        effects: {
+          stats: { cash: -8, supply: -10, risk: 5, brand: -3 },
+          macro: { externalSupplyRisk: 10 }
+        }
+      },
+      {
+        id: "sports-boom",
+        name: "全球体育热潮（奥运会 / 世界杯）",
+        desc: "全球跑步、健身热情高涨，运动鞋需求激增。",
+        weight: 4,
+        condition: (round, state, macro) => state.brand >= 10,
+        effects: {
+          stats: { cash: 10, growth: 12, brand: 8 },
+          macro: { consumerConfidence: 10 }
+        }
+      },
+      {
+        id: "black-swan-canal",
+        name: "黑天鹅：运河堵塞，全球航运大乱",
+        desc: "一艘巨轮卡在关键运河，你的一批货也被堵在海上。",
+        weight: 1, // 稀有
+        condition: (round, state, macro) => round >= 6,
+        effects: {
+          stats: { cash: -12, supply: -15, risk: 10 },
+          macro: { externalSupplyRisk: 15, inflation: 0.8, geoTension: 5 }
+        }
+      }
+    ];
+
+    let currentIndex = 0;
+
+    function updateStatsView() {
+      document.getElementById("stat-cash").textContent = state.cash;
+      document.getElementById("stat-supply").textContent = state.supply;
+      document.getElementById("stat-brand").textContent = state.brand;
+      document.getElementById("stat-team").textContent = state.team;
+      document.getElementById("stat-growth").textContent = state.growth;
+      document.getElementById("stat-risk").textContent = state.risk;
+
+      // 宏观
+      document.getElementById("macro-usd").textContent = macro.usdRate.toFixed(2);
+      document.getElementById("macro-tariff").textContent = macro.tariff.toFixed(0) + "%";
+      document.getElementById("macro-inflation").textContent = macro.inflation.toFixed(1) + "%";
+      document.getElementById("macro-interest").textContent = macro.interestRate.toFixed(2) + "%";
+      document.getElementById("macro-supplyrisk").textContent = macro.externalSupplyRisk.toFixed(0);
+      document.getElementById("macro-confidence").textContent = macro.consumerConfidence.toFixed(0);
+      document.getElementById("macro-geo").textContent = macro.geoTension.toFixed(0);
+
+      // 简单预警提示
+      setWarn("macro-usd-warn", macro.usdRate > 7.8, "美元偏强：进口成本在上升。");
+      setWarn("macro-tariff-warn", macro.tariff >= 20, "关税偏高：海外利润被严重压缩。");
+      setWarn("macro-inflation-warn", macro.inflation >= 5, "通胀走高：原材料、人工成本全面上升。");
+      setWarn("macro-interest-warn", macro.interestRate >= 5, "利率偏高：贷款和融资成本很贵。");
+      setWarn("macro-supplyrisk-warn", macro.externalSupplyRisk >= 40, "外部供应链风险偏高，小心断货。");
+      setWarn("macro-confidence-warn", macro.consumerConfidence <= 60, "消费者信心不足，需求走弱。");
+      setWarn("macro-geo-warn", macro.geoTension >= 40, "地缘紧张升级，可能触发额外制裁或冲突。");
+    }
+
+    function setWarn(id, condition, text) {
+      const el = document.getElementById(id);
+      el.textContent = condition ? text : "";
+    }
+
+    function isBankrupt() {
+      if (state.cash < -10) {
+        return "现金流彻底崩溃（cash < -10）";
+      }
+      if (state.supply < -20) {
+        return "供应链完全断裂（supply < -20）";
+      }
+      if (state.team < -15) {
+        return "核心团队流失殆尽（team < -15）";
+      }
+      return null;
+    }
+
+    function evaluateEnding() {
+      const deathReason = isBankrupt();
+      // 将外部宏观风险也叠加进综合风险中
+      const macroRiskScore = macro.externalSupplyRisk * 0.3 + macro.geoTension * 0.3 + macro.inflation * 0.5;
+      const effectiveRisk = state.risk + macroRiskScore * 0.2;
+
+      if (deathReason) {
+        return {
+          title: "【结局：被周期碾碎】",
+          text: `原因：${deathReason}\n\n你不仅没扛住公司内部的经营压力，也被宏观周期一起收割了。`
+        };
+      }
+
+      const power =
+        state.brand * 1.5 +
+        state.growth * 1.2 +
+        state.supply * 1.0 +
+        state.team * 1.0 +
+        state.cash * 0.8 -
+        effectiveRisk * 0.5;
+
+      if (power >= 230 && state.brand >= 80 && state.growth >= 60) {
+        return {
+          title: "【结局：穿越周期·超越耐克】",
+          text: "你不仅复制了奈特的路径，还在战争、汇率和中美冲突中保持扩张节奏，成为真正意义上的全球运动第一品牌。"
+        };
+      } else if (power >= 190 && state.brand >= 70) {
+        return {
+          title: "【结局：全球运动巨头】",
+          text: "你成功穿越几轮宏观波动，在高利率、关税和地缘冲突中稳住了基本盘，成为世界级运动品牌。"
+        };
+      } else if (power >= 135 && state.brand >= 50) {
+        return {
+          title: "【结局：中国顶级运动品牌】",
+          text: "你类似安踏 / 李宁，充分利用宏观窗口期，在周期里做成了区域级乃至国家级龙头。"
+        };
+      } else if (power >= 90) {
+        return {
+          title: "【结局：区域知名品牌】",
+          text: "你在本国 / 部分区域非常有名，但没能跨越汇率、关税和地缘政治的墙，尚未真正全球化。"
+        };
+      } else if (power >= 50) {
+        return {
+          title: "【结局：活下来的小公司】",
+          text: "你很清醒、很努力，也避开了很多坑，但在宏观大浪面前还是偏保守。你有尊严地活着，没有做大。"
+        };
+      } else {
+        return {
+          title: "【结局：勉强存活在周期夹缝中】",
+          text: "你并没有死掉，但也始终被利率、关税、通胀和外部冲击按在地上摩擦，走得很艰难。"
+        };
+      }
+    }
+
+    function appendLogChoice(questionId, choiceKey, effects) {
+      const log = document.getElementById("log");
+      const line = document.createElement("div");
+      line.className = "log-line-choice";
+      line.textContent =
+        `第 ${questionId} 关 选择 ${choiceKey}：` +
+        `cash ${effects.cash || 0}, supply ${effects.supply || 0}, ` +
+        `brand ${effects.brand || 0}, team ${effects.team || 0}, ` +
+        `growth ${effects.growth || 0}, risk ${effects.risk || 0}`;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function appendLogEvent(event, statsDelta, macroDelta) {
+      const log = document.getElementById("log");
+      const line = document.createElement("div");
+      line.className = "log-line-event";
+      const statsText =
+        `cash ${statsDelta.cash || 0}, supply ${statsDelta.supply || 0}, ` +
+        `brand ${statsDelta.brand || 0}, team ${statsDelta.team || 0}, ` +
+        `growth ${statsDelta.growth || 0}, risk ${statsDelta.risk || 0}`;
+      const macroText =
+        `USD ${macroDelta.usdRate || 0}, tariff ${macroDelta.tariff || 0}, ` +
+        `inflation ${macroDelta.inflation || 0}, interest ${macroDelta.interestRate || 0}, ` +
+        `extSupplyRisk ${macroDelta.externalSupplyRisk || 0}, conf ${macroDelta.consumerConfidence || 0}, ` +
+        `geo ${macroDelta.geoTension || 0}`;
+      line.textContent = `【宏观事件】${event.name}：${event.desc} ｜ 经营变化：${statsText}`;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function applyMacroEvent(event) {
+      const statsDelta = { cash: 0, supply: 0, brand: 0, team: 0, growth: 0, risk: 0 };
+      const macroDelta = {
+        usdRate: 0, tariff: 0, inflation: 0, interestRate: 0,
+        externalSupplyRisk: 0, consumerConfidence: 0, geoTension: 0
+      };
+      if (event.effects.stats) {
+        for (const k in event.effects.stats) {
+          const v = event.effects.stats[k] || 0;
+          state[k] += v;
+          statsDelta[k] = v;
+        }
+      }
+      if (event.effects.macro) {
+        const e = event.effects.macro;
+        if (e.usdRate) { macro.usdRate += e.usdRate; macroDelta.usdRate = e.usdRate; }
+        if (e.tariff) { macro.tariff += e.tariff; macroDelta.tariff = e.tariff; }
+        if (e.inflation) { macro.inflation += e.inflation; macroDelta.inflation = e.inflation; }
+        if (e.interestRate) { macro.interestRate += e.interestRate; macroDelta.interestRate = e.interestRate; }
+        if (e.externalSupplyRisk) { macro.externalSupplyRisk += e.externalSupplyRisk; macroDelta.externalSupplyRisk = e.externalSupplyRisk; }
+        if (e.consumerConfidence) { macro.consumerConfidence += e.consumerConfidence; macroDelta.consumerConfidence = e.consumerConfidence; }
+        if (e.geoTension) { macro.geoTension += e.geoTension; macroDelta.geoTension = e.geoTension; }
+      }
+      appendLogEvent(event, statsDelta, macroDelta);
+    }
+
+    function maybeTriggerMacroEvent() {
+      // 约 45% 概率触发一个宏观事件；在地缘紧张高时，概率稍微提高
+      let baseProb = 0.45;
+      if (macro.geoTension >= 40 || macro.externalSupplyRisk >= 40) {
+        baseProb += 0.15;
+      }
+      const roll = Math.random();
+      if (roll > baseProb) return;
+
+      // 按条件筛选可用事件
+      const available = macroEvents.filter(ev =>
+        ev.condition(currentIndex + 1, state, macro)
+      );
+      if (available.length === 0) return;
+
+      // 简单按 weight 做加权随机
+      const totalWeight = available.reduce((sum, ev) => sum + (ev.weight || 1), 0);
+      let threshold = Math.random() * totalWeight;
+      let chosen = available[0];
+      for (const ev of available) {
+        threshold -= (ev.weight || 1);
+        if (threshold <= 0) {
+          chosen = ev;
+          break;
+        }
+      }
+      applyMacroEvent(chosen);
+      updateStatsView();
+    }
+
+    function renderQuestion() {
+      const roundInfo = document.getElementById("round-info");
+      const total = questions.length;
+      const q = questions[currentIndex];
+
+      roundInfo.textContent = `第 ${q.id} 关 / 共 ${total} 关`;
+      document.getElementById("question-id").textContent = `Q${q.id}`;
+      document.getElementById("question-text").textContent = q.text;
+
+      const optionList = document.getElementById("option-list");
+      optionList.innerHTML = "";
+
+      for (const key of ["A", "B", "C", "D"]) {
+        const opt = q.options[key];
+        if (!opt) continue;
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerHTML = `<span class="key">${key}</span><span>${opt.text}</span>`;
+        btn.onclick = () => handleChoice(key);
+        optionList.appendChild(btn);
+      }
+
+      updateStatsView();
+    }
+
+    function handleChoice(key) {
+      const q = questions[currentIndex];
+      const opt = q.options[key];
+      const effects = opt.effects || {};
+
+      state.cash += effects.cash || 0;
+      state.supply += effects.supply || 0;
+      state.brand += effects.brand || 0;
+      state.team += effects.team || 0;
+      state.growth += effects.growth || 0;
+      state.risk += effects.risk || 0;
+
+      state.history.push({
+        question: q.id,
+        option: key,
+        effects
+      });
+
+      appendLogChoice(q.id, key, effects);
+      updateStatsView();
+
+      // 检查是否提前死亡
+      const deathReason = isBankrupt();
+      if (deathReason) {
+        endGame();
+        return;
+      }
+
+      // 在进入下一关前，基于当前轮次和宏观环境，概率触发宏观事件
+      maybeTriggerMacroEvent();
+
+      // 再次检查是否死亡
+      if (isBankrupt()) {
+        endGame();
+        return;
+      }
+
+      currentIndex++;
+      if (currentIndex >= questions.length) {
+        endGame();
+      } else {
+        renderQuestion();
+      }
+    }
+
+    function endGame() {
+      const optionList = document.getElementById("option-list");
+      optionList.innerHTML = "";
+
+      const resultBlock = document.getElementById("result-block");
+      const r = evaluateEnding();
+      document.getElementById("result-title").textContent = r.title;
+      document.getElementById("result-text").textContent =
+        r.text + `\n\n最终公司状态：\n` +
+        `💰 cash=${state.cash}\n📦 supply=${state.supply}\n` +
+        `🧲 brand=${state.brand}\n🧑‍🤝‍🧑 team=${state.team}\n` +
+        `📈 growth=${state.growth}\n🌪 internal risk=${state.risk}\n\n` +
+        `宏观环境收官：\n` +
+        `💵 USD/CNY=${macro.usdRate.toFixed(2)}  🧾 关税=${macro.tariff.toFixed(0)}%\n` +
+        `🔥 通胀=${macro.inflation.toFixed(1)}%  🏦 利率=${macro.interestRate.toFixed(2)}%\n` +
+        `🚢 外部供应链风险=${macro.externalSupplyRisk.toFixed(0)}\n` +
+        `🧠 消费者信心=${macro.consumerConfidence.toFixed(0)}  ⚔️ 地缘紧张度=${macro.geoTension.toFixed(0)}\n`;
+
+      resultBlock.style.display = "block";
+
+      document.getElementById("question-id").textContent = "游戏结束";
+      document.getElementById("question-text").textContent =
+        "你已完成全部关键抉择，宏观与微观的合力，决定了你的命运。";
+    }
+
+    // 初始化
+    renderQuestion();
+  </script>
+</body>
+</html>

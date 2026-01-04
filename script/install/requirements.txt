@@ -1,0 +1,16 @@
+scipy
+pandas
+matplotlib
+numpy
+opencv-python
+tqdm
+google
+protobuf
+sympy
+folium
+pyyaml
+pyquaternion
+future
+shapely
+psutil
+confluent_kafka

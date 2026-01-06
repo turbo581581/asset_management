@@ -27,7 +27,7 @@ def short_call_profit_ratio(P, K, C, T, a=0.05, c=0.023):
     return profit_ratio
 
 def short_put_profit_ratio(P, K, C, T, a=0.05, c=0.023):
-    C = (C + c) * pow(1 + a, T)
+    C = (C + c) * pow/(1 + a, T)
     profit_ratio = -(max(K - P, 0) - C) / C
     return profit_ratio
 def bear_call_spreed_profit_ratio(P, C0, C1, K0, K1, T, a=0.05, c = 0.023):
@@ -54,17 +54,17 @@ def test_call_put_profit(P0, P, K, C_call, C_put, T, a, name):
     # stock_benefits = [stock_profit_ratio(P0, p, T[0], a) for p in P]
     # plt.plot(P, stock_benefits, label='stock', c='b')
 
-    # for k, c, t in zip(K, C_call, T):
-    #     option_benefits = [call_profit_ratio(p, k, c, t, a) for p in P]
-    #     plt.plot(P, option_benefits, label=f'call_k={k},c={c}', ls = '-')
-    #
-    # for k, c, t in zip(K, C_put, T):
-    #     option_benefits = [put_profit_ratio(p, k, c, t, a) for p in P]
-    #     plt.plot(P, option_benefits, label=f'put_k={k},c={c}', ls='--')
-
     for k, c, t in zip(K, C_call, T):
-        option_benefits = [short_call_profit_ratio(p, k, c, t, a) for p in P]
-        plt.plot(P, option_benefits, label=f'short_call_k={k},c={c}', ls='-')
+        option_benefits = [call_profit_ratio(p, k, c, t, a) for p in P]
+        plt.plot(P, option_benefits, label=f'call_k={k},c={c}', ls = '-')
+
+    for k, c, t in zip(K, C_put, T):
+        option_benefits = [put_profit_ratio(p, k, c, t, a) for p in P]
+        plt.plot(P, option_benefits, label=f'put_k={k},c={c}', ls='--')
+
+    # for k, c, t in zip(K, C_call, T):
+    #     option_benefits = [short_call_profit_ratio(p, k, c, t, a) for p in P]
+    #     plt.plot(P, option_benefits, label=f'short_call_k={k},c={c}', ls='-')
 
     # for k, c, t in zip(K, C_put, T):
     #     option_benefits = [short_put_profit_ratio(p, k, c, t, a) for p in P]
@@ -99,18 +99,18 @@ def plot_investment_profit():
         plt.plot(N, option_benefits, label=f'i={i},w={w},l={l},wr={wr}', ls='-')
 
 if __name__ == '__main__':
-    name = "NIO"
+    name = "Silver"
     a = 0.052
-    P0 = 7.04
-    P = np.arange(P0-2, P0+2, 0.01)
-    B = [0, 0.03, 0.10, 0.35]
+    P0 = 65.75
+    P = np.arange(P0-20, P0+20, 0.01)
+    # B = [0, 0.03, 0.10, 0.35]
     # plot_long_short_profit(P0, P, 1, B, a, name)
 
-    # C_call = [1.05, 0.6,    0.275, 0.125, 0.065]
-    # C_put  = [0.015, 0.055, 0.235, 0.585, 1.025]
-    # K      = [6.0,   6.5,   7.0,   7.5,   8.0]
-    # T = [7./365, 7./365, 7./365, 7./365, 7./365]
-    # # test_call_put_profit(P0, P, K, C_call, C_put, T, a, name)
+    C_call = []
+    C_put  = [1.28, 1.04, 0.85, 0.68, 0.54]
+    K      = [60,   59,   58,   57,  56]
+    T = [7./365, 7./365, 7./365, 7./365, 7./365]
+    test_call_put_profit(P0, P, K, C_call, C_put, T, a, name)
     #
     # C0 = [1.05, 0.6, 0.275, 0.125, 0.065]
     # C1 = [0.6, 0.275, 0.125, 0.065, 0.035]
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     # K1 = [6.5, 7.0, 7.5, 8.0, 8.5]
     # test_bear_call_spreed_profit(P0, P, C0, C1, K0, K1, T, a, name)
 
-    plot_investment_profit()
+    # plot_investment_profit()
 
     plt.legend()
     plt.grid()

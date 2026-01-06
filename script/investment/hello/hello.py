@@ -1,23 +1,12 @@
-from futu import *
-import time
-quote_ctx = OpenQuoteContext(host='127.0.0.1', port=11111)
-ret1, data1 = quote_ctx.get_option_expiration_date(code='HK.00700')
+import pandas as pd
 
-filter1 = OptionDataFilter()
-filter1.delta_min = 0
-filter1.delta_max = 0.1
+# 读取数据
+df = pd.read_csv("/home/turbo/PycharmProjects/asset_management/data/micro_economic/us/4_market_status/sp500_full.csv")
 
-if ret1 == RET_OK:
-    expiration_date_list = data1['strike_time'].values.tolist()
-    for date in expiration_date_list:
-        ret2, data2 = quote_ctx.get_option_chain(code='HK.00700', start=date, end=date, data_filter=filter1)
-        if ret2 == RET_OK:
-            print(data2)
-            print(data2['code'][0])  # 取第一条的股票代码
-            print(data2['code'].values.tolist())  # 转为 list
-        else:
-            print('error:', data2)
-        time.sleep(3)
-else:
-    print('error:', data1)
-quote_ctx.close() # 结束后记得关闭当条连接，防止连接条数用尽
+# 日期转为 datetime，并按时间升序排序（非常重要）
+df["Date"] = pd.to_datetime(df["Date"])
+df = df.sort_values("Date")
+
+# 计算收盘价日涨跌幅
+df["sp500_ret"] = (df["sp_500_Close"].pct_change() * 100).round(2)
+df.to_csv('/home/turbo/PycharmProjects/asset_management/data/micro_economic/us/4_market_status/sp500_full_1.csv', index=False)

@@ -6,7 +6,7 @@ import sys
 import os
 import tushare as ts
 import pandas as pd
-
+import numpy as np
 def download_us_ecomonic(save_path, start, end):
     folder_1 = "1_balance_of_payment"
     folder_2 = "2_monetary_and_fiscal_policy"
@@ -17,68 +17,73 @@ def download_us_ecomonic(save_path, start, end):
         os.makedirs(os.path.join(save_path, folder_2))
         os.makedirs(os.path.join(save_path, folder_3))
         os.makedirs(os.path.join(save_path, folder_4))
-    ## 1_balance_of_payment
-    # current account
-    current_account = web.DataReader('USAB6BLTT02STSAQ', 'fred', start, end)
-    current_account.to_csv(os.path.join(save_path, folder_1, "current_account.csv"), header=['current_account'])
-    # govement debt
-    government_debt = web.DataReader('GFDEGDQ188S', 'fred', start, end)
-    government_debt.to_csv(os.path.join(save_path, folder_1, "government_debt.csv"), header=['government_debt'])
-    # private debt
-    private_debt = web.DataReader('DDDM03USA156NWDB', 'fred', start, end)
-    private_debt.to_csv(os.path.join(save_path, folder_1, "private_debt.csv"), header=['private_debt'])
-    # capital_inflow
-    capital_inflow = web.DataReader('NETFI', 'fred', start, end)
-    capital_inflow.to_csv(os.path.join(save_path, folder_1, "capital_inflow.csv"), header=['capital_inflow'])
-
-    ## 2_monetary_and_fiscal_policy
-    # rate
-    rate = web.DataReader('FEDFUNDS', 'fred', start, end)
-    rate.to_csv(os.path.join(save_path, folder_2,"rate.csv"), header=['rate'])
-    # m0
-    m0 = web.DataReader('M1SL', 'fred', start, end)
-    m0.to_csv(os.path.join(save_path, folder_2, "m1.csv"), header=['m1'])
-    # government budget
-    fed_surplus = web.DataReader('FYFSGDA188S', 'fred', start, end)
-    fed_surplus.to_csv(os.path.join(save_path, folder_2, "fed_surplus.csv"), header=['fed_surplus'])
-    # bonds
-    bonds_10y = web.DataReader('DGS10', 'fred', start, end)
-    bonds_10y.to_csv(os.path.join(save_path, folder_2, "bonds_10y.csv"), header=['bonds_10y'])
-    bonds_1y = web.DataReader('DGS1', 'fred', start, end)
-    bonds_1y.to_csv(os.path.join(save_path, folder_2, "bonds_1y.csv"), header=['bonds_1y'])
-
-    ## 3_economic_status
-    # gdp
-    gdp = wb.download(indicator='NY.GDP.MKTP.CD', country='USA', start=start, end=end)
-    gdp['gdp'] = gdp['NY.GDP.MKTP.CD'] / 1.e12
-    gdp.to_csv(os.path.join(save_path, folder_3, "gdp.csv"))
-    # gdp growth
-    gdp_growth = wb.download(indicator='NY.GDP.MKTP.KD.ZG', country='USA', start=start, end=end)
-    gdp_growth.to_csv(os.path.join(save_path, folder_3, "gdp_growth.csv"))
-    # core inflation rate
-    core_inflation_rate = web.DataReader('CORESTICKM159SFRBATL', 'fred', start, end)
-    core_inflation_rate.to_csv(os.path.join(save_path, folder_3, "core_inflation_rate.csv"), header=['core_inflation_rate'])
-    # unemployment_rate
-    unemployment_rate = web.DataReader('UNRATE', 'fred', start, end)
-    unemployment_rate.to_csv(os.path.join(save_path, folder_3, "unemployment_rate.csv"), header=['unemployment_rate'])
-
-    # 4_market_status
-    # stock
-    sp500 = web.StooqDailyReader('^SPX', start, end).read()
-    sp500.to_csv(os.path.join(save_path, folder_4, "sp500_full.csv"), header=['Open', 'High', 'Low', 'sp_500_Close', 'Volume'])
+    # ## 1_balance_of_payment
+    # # current account
+    # current_account = web.DataReader('USAB6BLTT02STSAQ', 'fred', start, end)
+    # current_account.to_csv(os.path.join(save_path, folder_1, "current_account.csv"), header=['current_account'])
+    # # govement debt
+    # government_debt = web.DataReader('GFDEGDQ188S', 'fred', start, end)
+    # government_debt.to_csv(os.path.join(save_path, folder_1, "government_debt.csv"), header=['government_debt'])
+    # # private debt
+    # private_debt = web.DataReader('DDDM03USA156NWDB', 'fred', start, end)
+    # private_debt.to_csv(os.path.join(save_path, folder_1, "private_debt.csv"), header=['private_debt'])
+    # # capital_inflow
+    # capital_inflow = web.DataReader('NETFI', 'fred', start, end)
+    # capital_inflow.to_csv(os.path.join(save_path, folder_1, "capital_inflow.csv"), header=['capital_inflow'])
+    #
+    # ## 2_monetary_and_fiscal_policy
+    # # rate
+    # rate = web.DataReader('FEDFUNDS', 'fred', start, end)
+    # rate.to_csv(os.path.join(save_path, folder_2,"rate.csv"), header=['rate'])
+    # # m0
+    # m0 = web.DataReader('M1SL', 'fred', start, end)
+    # m0.to_csv(os.path.join(save_path, folder_2, "m1.csv"), header=['m1'])
+    # # government budget
+    # fed_surplus = web.DataReader('FYFSGDA188S', 'fred', start, end)
+    # fed_surplus.to_csv(os.path.join(save_path, folder_2, "fed_surplus.csv"), header=['fed_surplus'])
+    # # bonds
+    # bonds_10y = web.DataReader('DGS10', 'fred', start, end)
+    # bonds_10y.to_csv(os.path.join(save_path, folder_2, "bonds_10y.csv"), header=['bonds_10y'])
+    # bonds_1y = web.DataReader('DGS1', 'fred', start, end)
+    # bonds_1y.to_csv(os.path.join(save_path, folder_2, "bonds_1y.csv"), header=['bonds_1y'])
+    #
+    # ## 3_economic_status
+    # # gdp
+    # gdp = wb.download(indicator='NY.GDP.MKTP.CD', country='USA', start=start, end=end)
+    # gdp['gdp'] = gdp['NY.GDP.MKTP.CD'] / 1.e12
+    # gdp.to_csv(os.path.join(save_path, folder_3, "gdp.csv"))
+    # # gdp growth
+    # gdp_growth = wb.download(indicator='NY.GDP.MKTP.KD.ZG', country='USA', start=start, end=end)
+    # gdp_growth.to_csv(os.path.join(save_path, folder_3, "gdp_growth.csv"))
+    # # core inflation rate
+    # core_inflation_rate = web.DataReader('CORESTICKM159SFRBATL', 'fred', start, end)
+    # core_inflation_rate.to_csv(os.path.join(save_path, folder_3, "core_inflation_rate.csv"), header=['core_inflation_rate'])
+    # # unemployment_rate
+    # unemployment_rate = web.DataReader('UNRATE', 'fred', start, end)
+    # unemployment_rate.to_csv(os.path.join(save_path, folder_3, "unemployment_rate.csv"), header=['unemployment_rate'])
+    #
+    # # 4_market_status
+    # # stock
+    # sp500 = web.StooqDailyReader('^SPX', start, end).read()
+    # sp500["sp500_Ret"] = (sp500["Close"].pct_change() * 100).round(2)
+    # sp500.to_csv(os.path.join(save_path, folder_4, "sp500_full.csv"), header=['Open', 'High', 'Low', 'sp500_Close', 'Volume', 'sp500_Ret'])
     # gold and silver
     xagusd_df = pd.read_csv("https://stooq.com/q/d/l/?s=xagusd&i=d")
-    # xagusd_df['Date'] = pd.to_datetime(xagusd_df['Date'])
-    xagusd_df.to_csv(os.path.join(save_path, folder_4, "xagusd.csv"), header=['Date', 'Open', 'High', 'Low', 'xagusd_Close'], index=False)
+    xagusd_df["xagusd_Ret"] = (xagusd_df["Close"].pct_change() * 100).round(2)
+    xagusd_df["xagusd_Gt_9"] = np.where(xagusd_df["xagusd_Ret"] > 9, 1, np.where(xagusd_df["xagusd_Ret"] < -9, -1, 0))
+    xagusd_df.to_csv(os.path.join(save_path, folder_4, "xagusd.csv"), header=['Date', 'Open', 'High', 'Low', 'xagusd_Close', 'xagusd_Ret', 'xagusd_Gt_9'], index=False)
     xauusd_df = pd.read_csv("https://stooq.com/q/d/l/?s=xauusd&i=d")
-    # xauusd_df['Date'] = pd.to_datetime(xauusd_df['Date'])
-    xauusd_df.to_csv(os.path.join(save_path, folder_4, "xauusd.csv"), header=['Date', 'Open', 'High', 'Low', 'xauusd_Close'], index=False)
+    xauusd_df["xauusd_Ret"] = (xauusd_df["Close"].pct_change() * 100).round(2)
+    xauusd_df["xauusd_Gt_9"] = np.where(xauusd_df["xauusd_Ret"] > 9, 1, np.where(xauusd_df["xauusd_Ret"] < -9, -1, 0))
+    xauusd_df.to_csv(os.path.join(save_path, folder_4, "xauusd.csv"), header=['Date', 'Open', 'High', 'Low', 'xauusd_Close', 'xauusd_Ret', 'xauusd_Gt_9'], index=False)
     # oil
     crude_oil_price = web.DataReader('DCOILWTICO', 'fred', start, end)
-    crude_oil_price.to_csv(os.path.join(save_path, folder_4, "crude_oil_price.csv"), header=['crude_oil_price'])
+    crude_oil_price["crude_oil_Ret"] = (crude_oil_price["DCOILWTICO"].pct_change() * 100).round(2).fillna(0)
+    crude_oil_price.to_csv(os.path.join(save_path, folder_4, "crude_oil_price.csv"), header=['crude_oil_price', 'crude_oil_Ret'])
     # exchange
     us_cn_exchange = web.DataReader('DEXCHUS', 'fred', start, end)
-    us_cn_exchange.to_csv(os.path.join(save_path, folder_4, "us_cn_exchange.csv"), header=['us_cn_exchange'])
+    us_cn_exchange["us_cn_exchange_Ret"] = (us_cn_exchange["DEXCHUS"].pct_change() * 100).round(2).fillna(0)
+    us_cn_exchange.to_csv(os.path.join(save_path, folder_4, "us_cn_exchange.csv"), header=['us_cn_exchange', 'us_cn_exchange_Ret'])
 
 
 def download_cn_ecomonic(save_path, start, end):
